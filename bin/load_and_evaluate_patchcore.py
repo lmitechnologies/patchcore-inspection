@@ -18,6 +18,8 @@ LOGGER = logging.getLogger(__name__)
 
 _DATASETS = {"mvtec": ["patchcore.datasets.mvtec", "MVTecDataset"]}
 
+IMAGENET_MEAN = [0.485, 0.456, 0.406]
+IMAGENET_STD = [0.229, 0.224, 0.225]
 
 @click.group(chain=True)
 @click.argument("results_path", type=str)
@@ -120,6 +122,8 @@ def run(methods, results_path, gpu, seed, save_segmentation_images):
                 ]
 
                 def image_transform(image):
+                    dataloaders["testing"].dataset.transform_std = IMAGENET_STD
+                    dataloaders["testing"].dataset.transform_mean = IMAGENET_MEAN
                     in_std = np.array(
                         dataloaders["testing"].dataset.transform_std
                     ).reshape(-1, 1, 1)
