@@ -263,14 +263,19 @@ class PatchCore(torch.nn.Module):
         LOGGER.info("Loading and initializing PatchCore.")
         with open(self._params_file(load_path, prepend), "rb") as load_file:
             patchcore_params = pickle.load(load_file)
+        LOGGER.info(f"Loading backbone {patchcore_params['backbone.name']}.")
         patchcore_params["backbone"] = patchcore.backbones.load(
             patchcore_params["backbone.name"]
         )
+        LOGGER.info(f"deleting key backbone.name.")
         patchcore_params["backbone"].name = patchcore_params["backbone.name"]
         del patchcore_params["backbone.name"]
+        LOGGER.info(f"load.")
         self.load(**patchcore_params, device=device, nn_method=nn_method)
 
+        LOGGER.info(f"anomaly_scorer.load.")
         self.anomaly_scorer.load(load_path, prepend)
+        LOGGER.info(f"end.")
 
 
 # Image handling classes.
