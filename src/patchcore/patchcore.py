@@ -37,55 +37,44 @@ class PatchCore(torch.nn.Module):
         nn_method=patchcore.common.FaissNN(False, 4),
         **kwargs,
     ):
-        LOGGER.info("load start.")
         self.backbone = backbone.to(device)
         self.layers_to_extract_from = layers_to_extract_from
         self.input_shape = input_shape
 
-        LOGGER.info("load start - 1.")
         self.device = device
         self.patch_maker = PatchMaker(patchsize, stride=patchstride)
 
-        LOGGER.info("load start - 2.")
         self.forward_modules = torch.nn.ModuleDict({})
 
-        LOGGER.info("load start - 3.")
         feature_aggregator = patchcore.common.NetworkFeatureAggregator(
             self.backbone, self.layers_to_extract_from, self.device
         )
-        LOGGER.info("load start - 4.")
         feature_dimensions = feature_aggregator.feature_dimensions(input_shape)
         self.forward_modules["feature_aggregator"] = feature_aggregator
 
-        LOGGER.info("load start - 5.")
         preprocessing = patchcore.common.Preprocessing(
             feature_dimensions, pretrain_embed_dimension
         )
         self.forward_modules["preprocessing"] = preprocessing
 
-        LOGGER.info("load start - 6.")
         self.target_embed_dimension = target_embed_dimension
         preadapt_aggregator = patchcore.common.Aggregator(
             target_dim=target_embed_dimension
         )
 
-        LOGGER.info("load start - 7.")
         _ = preadapt_aggregator.to(self.device)
 
         self.forward_modules["preadapt_aggregator"] = preadapt_aggregator
 
-        LOGGER.info("load start - 8.")
         self.anomaly_scorer = patchcore.common.NearestNeighbourScorer(
             n_nearest_neighbours=anomaly_score_num_nn, nn_method=nn_method
         )
 
-        LOGGER.info("load start - 9.")
         self.anomaly_segmentor = patchcore.common.RescaleSegmentor(
             device=self.device, target_size=input_shape[-2:]
         )
 
         self.featuresampler = featuresampler
-        LOGGER.info("load start - 10 end.")
 
     def embed(self, data):
         if isinstance(data, torch.utils.data.DataLoader):

@@ -369,9 +369,7 @@ class NearestNeighbourScorer(object):
 
     @staticmethod
     def _load(filename: str):
-        LOGGER.info("_load start")
         with open(filename, "rb") as load_file:
-            LOGGER.info("_load start - 1")
             return pickle.load(load_file)
 
     def save(
@@ -391,12 +389,9 @@ class NearestNeighbourScorer(object):
         self.nn_method.reset_index()
 
     def load(self, load_folder: str, prepend: str = "") -> None:
-        LOGGER.info("load start")
+        LOGGER.info(f"load start load_folder {load_folder}, prepend {prepend}")
         self.nn_method.load(self._index_file(load_folder, prepend))
-        LOGGER.info("load start - 1")
         if os.path.exists(self._detection_file(load_folder, prepend)):
-            LOGGER.info("load start - 2")
             self.detection_features = self._load(
                 self._detection_file(load_folder, prepend)
             )
-        LOGGER.info("load start - end")
